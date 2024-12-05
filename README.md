@@ -9,6 +9,7 @@ wget https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7
 tar xvf openjdk-17.0.2_linux-x64_bin.tar.gz
 
 sudo mv jdk-17.0.2/ /opt/jdk-17
+
 ----------------------------------
  CHANGE ENV VARIABLES FOR ALL USERS
 -------------------------------------
