@@ -1,3 +1,12 @@
+CREATE A VM IN GCP
+
+gcloud compute instances create jenkins-slave \
+    --zone=us-west4-b \
+    --machine-type=e2-medium \
+    --tags=http-server,https-server \
+    --create-disk=auto-delete=yes,boot=yes,device-name=jenkins-slave,image=projects/centos-cloud/global/images/centos-stream-9-v20241210,mode=rw,size=20
+
+
 # openjdk-17
 --------------------
  INSTALL OPENJDK-17
