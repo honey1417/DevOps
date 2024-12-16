@@ -1,4 +1,4 @@
-CREATE A VM IN GCP
+#CREATE A VM IN GCP
 
 gcloud compute instances create jenkins-slave \
     --zone=us-west4-b \
