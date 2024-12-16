@@ -1,8 +1,9 @@
+```bash
 mkdir springapp
 cd springapp
 vi Dockerfile
-
-#add the following in the Dockerfile
+```
+##add the following in the Dockerfile
 
 FROM openjdk:17
 ARG SRC_DIR=/tmp/javaapp
@@ -12,7 +13,9 @@ ADD https://storage.googleapis.com/authentic-host-441701-i5-dev/spring-petclinic
 EXPOSE 8080
 CMD ["java", "-jar", "spring-petclinic.jar"]
 
+```bash
 docker build -t spring:java .
 docker run -d --name petclinicdev -P spring:java
 docker ps
 docker exec -it petclinicdev /bin/bash
+```
