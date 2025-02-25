@@ -26,14 +26,26 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 
-# Step 3: Reload systemd daemon
+# Step 3:  Set ownership of the node directory
+sudo chown -R prometheus:prometheus /var/lib/node
+
+# Step 4: Set ownership for all files in the node directory
+sudo chown -R prometheus:prometheus /var/lib/node/*
+
+# Step 5 : Set correct permissions for the node directory
+sudo chmod -775 prometheus:prometheus /var/lib/node
+
+# Step 6 : Set correct permissions for all files in the node directory
+sudo chmod -775 prometheus:prometheus /var/lib/node/*
+
+# Step 7: Reload systemd daemon
 sudo systemctl daemon-reload
 
-# Step 4: Start Node Exporter service
+# Step 8: Start Node Exporter service
 sudo systemctl start node_exporter
 
-# Step 5: Enable Node Exporter to start on boot
+# Step 9: Enable Node Exporter to start on boot
 sudo systemctl enable node_exporter
 
-# Step 9: Check Node Exporter status
+# Step 10: Check Node Exporter status
 sudo systemctl status node_exporter
