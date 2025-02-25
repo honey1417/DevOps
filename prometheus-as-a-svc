@@ -1,0 +1,84 @@
+# Create a system group for Prometheus
+sudo groupadd --system prometheus
+
+# Create a Prometheus user with no login shell, assigning it to the prometheus group
+sudo useradd -s /sbin/nologin -g prometheus prometheus
+
+# Create a directory for Prometheus data storage
+sudo mkdir /var/lib/prometheus
+
+# Move into the Prometheus extracted directory
+cd prometheus-3.2.0.linux-amd64
+
+# Move Prometheus binaries to /usr/local/bin for system-wide access
+sudo mv prometheus promtool /usr/local/bin/
+
+# Verify Prometheus installation
+prometheus --version
+
+# Navigate to /etc directory
+cd /etc/
+
+# Create a configuration directory for Prometheus
+sudo mkdir prometheus
+
+# Move back to the Prometheus directory
+cd ~/prometheus-3.2.0.linux-amd64
+
+# Move the Prometheus configuration file to its new location
+sudo mv prometheus.yml /etc/prometheus/prometheus.yml
+
+# Create a systemd service file for Prometheus
+sudo tee /etc/systemd/system/prometheus.service <<EOF
+[Unit]
+Description=Prometheus  # Service description
+Documentation=https://prometheus.io/docs/introduction/overview/  # Documentation link
+Wants=network-online.target  # Ensure network is up before starting
+After=network-online.target  # Start after the network is available
+
+[Service]
+Type=simple  # Simple service type
+User=prometheus  # Run as prometheus user
+Group=prometheus  # Run as prometheus group
+ExecReload=/bin/kill -HUP \$MAINPID  # Command to reload the service
+ExecStart=/usr/local/bin/prometheus \  # Start Prometheus with options
+    --config.file=/etc/prometheus/prometheus.yml \  # Specify the config file
+    --storage.tsdb.path=/var/lib/prometheus \  # Set the data storage location
+    --web.console.templates=/etc/prometheus/consoles \  # Console templates path
+    --web.console.libraries=/etc/prometheus/console_libraries \  # Console libraries path
+    --web.listen-address=0.0.0.0:9090 \  # Listen on all network interfaces on port 9090
+    --web.external-url=  # External URL placeholder
+
+SyslogIdentifier=prometheus  # Logging identifier
+Restart=always  # Restart service on failure
+
+[Install]
+WantedBy=multi-user.target  # Start at system boot
+EOF
+
+# Set ownership of the Prometheus config directory
+sudo chown -R prometheus:prometheus /etc/prometheus
+
+# Set ownership for all files in the config directory
+sudo chown -R prometheus:prometheus /etc/prometheus/*
+
+# Set correct permissions for the config directory
+sudo chmod -R 775 /etc/prometheus/
+
+# Set correct permissions for all files in the config directory
+sudo chmod -R 775 /etc/prometheus/*
+
+# Set ownership of the Prometheus data directory
+sudo chown -R prometheus:prometheus /var/lib/prometheus/
+
+# Set ownership for all files in the data directory
+sudo chown -R prometheus:prometheus /var/lib/prometheus/*
+
+# Reload systemd to apply changes
+sudo systemctl daemon-reload
+
+# Start the Prometheus service
+sudo systemctl start prometheus
+
+# Check the status of the Prometheus service
+sudo systemctl status prometheus
