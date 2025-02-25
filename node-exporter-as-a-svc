@@ -1,40 +1,38 @@
+#Step 0: make node directory in/var/lib
+cd /var/lib
+sudo mkdir node
 
-# Step 1: Create a system user for Node Exporter (no login shell)
-sudo useradd -rs /bin/false node_exporter
+# Step 1: Move Node Exporter binary to /var/lib/node 
+sudo mv node_exporter-1.9.0.linux-amd64/node_exporter /var/lib/node
 
-# Step 2: Move Node Exporter binary to /usr/local/bin/
-sudo mv node_exporter-1.9.0.linux-amd64/node_exporter /usr/local/bin/
-
-# Step 3: Move Node Exporter binary to /usr/local/bin/
-sudo mv node_exporter-1.7.0.linux-amd64/node_exporter /usr/local/bin/
-
-# Step 4: Set correct ownership and permissions
-sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
-
-# Step 5: Create a systemd service file for Node Exporter
+# Step 2: Create a systemd service file for Node Exporter
 sudo tee /etc/systemd/system/node_exporter.service <<EOF
 [Unit]
-Description=Node Exporter
+Description=Prometheus Node Exporter
+Documentation=https://prometheus.io/docs/introduction/overview/
 Wants=network-online.target
 After=network-online.target
 
 [Service]
-User=node_exporter
-Group=node_exporter
 Type=simple
-ExecStart=/usr/local/bin/node_exporter
+User=prometheus
+Group=prometheus
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/var/lib/node/node_exporter
+
+SyslogIdentifier=prometheus_node_exporter
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
-EOF
 
-# Step 6: Reload systemd daemon
+# Step 3: Reload systemd daemon
 sudo systemctl daemon-reload
 
-# Step 7: Start Node Exporter service
+# Step 4: Start Node Exporter service
 sudo systemctl start node_exporter
 
-# Step 8: Enable Node Exporter to start on boot
+# Step 5: Enable Node Exporter to start on boot
 sudo systemctl enable node_exporter
 
 # Step 9: Check Node Exporter status
