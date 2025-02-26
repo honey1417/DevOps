@@ -18,7 +18,7 @@ Type=simple
 User=prometheus
 Group=prometheus
 ExecReload=/bin/kill -HUP $MAINPID
-ExecStart=/var/lib/node/node_exporter
+ExecStart=/bin/bash -c '/var/lib/node/node_exporter'
 
 SyslogIdentifier=prometheus_node_exporter
 Restart=always
